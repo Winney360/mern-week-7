@@ -26,7 +26,7 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(cors());
 app.use(cors({
-  origin: ['http://localhost:5173'], // Match Vite port
+  origin: ['https://mern-week-7.vercel.app/'], // Match Vite port
   credentials: true,
 }));
 app.use(express.json());
