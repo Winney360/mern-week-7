@@ -1,78 +1,102 @@
-[![Open in Visual Studio Code](https://classroom.github.com/assets/open-in-vscode-2e0aaae1b6195c2367325f4f02e2d04e9abb55f0b24a779b69b11b9e10269abc.svg)](https://classroom.github.com/online_ide?assignment_repo_id=19952409&assignment_repo_type=AssignmentRepo)
-# Deployment and DevOps for MERN Applications
 
-This assignment focuses on deploying a full MERN stack application to production, implementing CI/CD pipelines, and setting up monitoring for your application.
+# MERN Stack Application
 
-## Assignment Overview
+## Overview
+This is a full-stack MERN (MongoDB, Express.js, React, Node.js) application built as part of Week 7 of a coding bootcamp. The application allows users to register, log in, create posts, and view post details, with JWT-based authentication. The frontend is built with React and Vite, styled with Tailwind CSS, and deployed on Vercel. The backend uses Express.js and MongoDB, deployed on Render. The project includes a CI/CD pipeline with GitHub Actions, linting with ESLint, and monitoring with UptimeRobot and Sentry.
 
-You will:
-1. Prepare your MERN application for production deployment
-2. Deploy the backend to a cloud platform
-3. Deploy the frontend to a static hosting service
-4. Set up CI/CD pipelines with GitHub Actions
-5. Implement monitoring and maintenance strategies
+## URLs
+- **Frontend (Production)**: https://mern-week-7-project.vercel.app
 
-## Getting Started
 
-1. Accept the GitHub Classroom assignment invitation
-2. Clone your personal repository that was created by GitHub Classroom
-3. Follow the setup instructions in the `Week7-Assignment.md` file
-4. Use the provided templates and configuration files as a starting point
+## CI/CD
 
-## Files Included
+**Pipeline**: Configured using GitHub Actions to automate linting, testing, and building for both frontend and backend.  
+**Workflow**: [Link to GitHub Actions workflow]  
+  
 
-- `Week7-Assignment.md`: Detailed assignment instructions
-- `.github/workflows/`: GitHub Actions workflow templates
-- `deployment/`: Deployment configuration files and scripts
-- `.env.example`: Example environment variable templates
-- `monitoring/`: Monitoring configuration examples
+**Details**:
+- **Linting**: ESLint for JavaScript files in `client/` and `server/`.
+- **Testing**: Jest for unit tests (configured to pass with no tests for initial setup).
+- **Build**: Vite build for frontend (`pnpm run build`) and backend validation.
+- **Trigger**: Runs on push to `main` and `staging` branches.
 
-## Requirements
+## Monitoring
 
-- A completed MERN stack application from previous weeks
-- Accounts on the following services:
-  - GitHub
-  - MongoDB Atlas
-  - Render, Railway, or Heroku (for backend)
-  - Vercel, Netlify, or GitHub Pages (for frontend)
-- Basic understanding of CI/CD concepts
+- **Uptime Monitoring**: UptimeRobot monitors the frontend (`https://your-app.vercel.app`) and backend health endpoint (`https://mern-week-7.onrender.com/health`) every 5 minutes.
+- **Error Tracking**: Sentry is integrated for both frontend (`client/src/index.js`) and backend (`server/index.js`) to capture runtime errors and performance issues.
+- **Performance**: Lighthouse reports generated via Chrome DevTools, combined with Sentry performance monitoring.
+- **Screenshots**: [Insert or link to UptimeRobot and Sentry dashboards]
 
-## Deployment Platforms
+## Deployment
 
-### Backend Deployment Options
-- **Render**: Easy to use, free tier available
-- **Railway**: Developer-friendly, generous free tier
-- **Heroku**: Well-established, extensive documentation
+### Clone the Repository:
+```bash
+git clone [your-repo-url]
+cd mern-week-7
+```
 
-### Frontend Deployment Options
-- **Vercel**: Optimized for React apps, easy integration
-- **Netlify**: Great for static sites, good CI/CD
-- **GitHub Pages**: Free, integrated with GitHub
+### Backend (Render):
+- **Directory**: `server/`
+- **Install dependencies**: `pnpm install`
+- **Environment variables** (in Render dashboard or `server/.env`):
+  ```env
+  PORT=5000
+  MONGO_URI=mongodb+srv://<user>:<password>@cluster0.mongodb.net/<dbname>
+  NODE_ENV=production
+  JWT_SECRET=your-secret-key
+  ```
+- **Start**: `node index.js`
+- **Deploy**: Push to `main` or `staging` branch with auto-deploy enabled in Render.
 
-## CI/CD Pipeline
+### Frontend (Vercel):
+- **Directory**: `client/`
+- **Install dependencies**: `pnpm install`
+- **Environment variables** (in Vercel dashboard or `client/.env.production`):
+  ```env
+  REACT_APP_API_URL=https://mern-week-7.onrender.com/api
+  ```
+- **Build**: `pnpm run build`
+- **Output**: `dist/`
+- **Deploy**: Push to `main` or `staging` branch with auto-deploy enabled in Vercel.
 
-The assignment includes templates for setting up GitHub Actions workflows:
-- `frontend-ci.yml`: Tests and builds the React application
-- `backend-ci.yml`: Tests the Express.js backend
-- `frontend-cd.yml`: Deploys the frontend to your chosen platform
-- `backend-cd.yml`: Deploys the backend to your chosen platform
+## Rollback
 
-## Submission
+- **Revert Changes**: If a deployment fails, revert to the previous commit:
+  ```bash
+  git revert <commit-hash>
+  git push origin main
+  ```
+- **Redeploy Previous Build**: In Vercel or Render, select a previous successful build from the Deployments tab and redeploy.
+- **Backup**: MongoDB Atlas backups are enabled for data recovery.
 
-Your work will be automatically submitted when you push to your GitHub Classroom repository. Make sure to:
+## Maintenance
 
-1. Complete all deployment tasks
-2. Set up CI/CD pipelines with GitHub Actions
-3. Deploy both frontend and backend to production
-4. Document your deployment process in the README.md
-5. Include screenshots of your CI/CD pipeline in action
-6. Add URLs to your deployed applications
+- **Weekly Updates**:
+  ```bash
+  cd client
+  pnpm update
+  cd ../server
+  pnpm update
+  ```
+- **Backups**: Daily automated backups configured in MongoDB Atlas (Atlas > Cluster > Backups).
+- **Monitoring**: Regularly check UptimeRobot for uptime alerts and Sentry for error reports.
+- **Performance**: Run Lighthouse audits weekly to ensure optimal frontend performance.
 
-## Resources
+## Local Development
 
-- [GitHub Actions Documentation](https://docs.github.com/en/actions)
-- [MongoDB Atlas Documentation](https://docs.atlas.mongodb.com/)
-- [Render Documentation](https://render.com/docs)
-- [Railway Documentation](https://docs.railway.app/)
-- [Vercel Documentation](https://vercel.com/docs)
-- [Netlify Documentation](https://docs.netlify.com/) 
+### Backend:
+```bash
+cd server
+pnpm install
+node index.js
+```
+Ensure MongoDB is running locally or use MongoDB Atlas.
+
+### Frontend:
+```bash
+cd client
+pnpm install
+pnpm run dev
+```
+Access at `http://localhost:5173`.
+
