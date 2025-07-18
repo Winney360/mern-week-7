@@ -1,8 +1,15 @@
 import axios from 'axios';
 
-// Create axios instance with base URL
+// Determine base URL based on environment
+const getBaseUrl = () => {
+  if (import.meta.env.PROD) {
+    return 'https://mern-week-7.onrender.com/api'; // Render backend URL
+  }
+  return import.meta.env.VITE_API_URL || 'http://localhost:5000/api'; // Fallback for dev
+};
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL ,
+  baseURL: getBaseUrl(),
   headers: {
     'Content-Type': 'application/json',
   },
@@ -16,8 +23,9 @@ api.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     }
     if (config.data instanceof FormData) {
-      config.headers['Content-Type'] = 'multipart/form-data';
+      delete config.headers['Content-Type']; // Let browser set multipart/form-data
     }
+    console.log('Request config:', config); // Debug log
     return config;
   },
   (error) => {
@@ -27,9 +35,11 @@ api.interceptors.request.use(
 
 // Add response interceptor for error handling
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    console.log('Response data:', response.data); // Debug log
+    return response;
+  },
   (error) => {
-    // Handle authentication errors
     if (error.response && error.response.status === 401) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
@@ -41,46 +51,39 @@ api.interceptors.response.use(
 
 // Post API services
 export const postService = {
-  // Get all posts (simplified to handle flat array response)
   getAllPosts: async () => {
-    console.log('Fetching all posts from:', `${api.defaults.baseURL}/posts`); // Debug log
+    console.log('Fetching all posts from:', `${api.defaults.baseURL}/posts`);
     const response = await api.get('/posts');
-    console.log('API Response in getAllPosts:', response.data); // Debug log
-    return response.data; // Returns flat array as per Postman response
+    console.log('API Response in getAllPosts:', response.data);
+    return response.data;
   },
 
-  // Get a single post by ID or slug
   getPost: async (idOrSlug) => {
     const response = await api.get(`/posts/${idOrSlug}`);
     return response.data;
   },
 
-  // Create a new post
   createPost: async (postData) => {
-    console.log('Creating post with data:', postData); // Debug log
+    console.log('Creating post with data:', postData);
     const response = await api.post('/posts', postData);
     return response.data;
   },
 
-  // Update an existing post
   updatePost: async (id, postData) => {
     const response = await api.put(`/posts/${id}`, postData);
     return response.data;
   },
 
-  // Delete a post
   deletePost: async (id) => {
     const response = await api.delete(`/posts/${id}`);
     return response.data;
   },
 
-  // Add a comment to a post
   addComment: async (postId, commentData) => {
     const response = await api.post(`/posts/${postId}/comments`, commentData);
     return response.data;
   },
 
-  // Search posts
   searchPosts: async (query) => {
     const response = await api.get(`/posts/search?q=${query}`);
     return response.data;
@@ -89,13 +92,11 @@ export const postService = {
 
 // Category API services
 export const categoryService = {
-  // Get all categories
   getAllCategories: async () => {
     const response = await api.get('/categories');
     return response.data;
   },
 
-  // Create a new category
   createCategory: async (categoryData) => {
     const response = await api.post('/categories', categoryData);
     return response.data;
@@ -104,13 +105,11 @@ export const categoryService = {
 
 // Auth API services
 export const authService = {
-  // Register a new user
   register: async (userData) => {
     const response = await api.post('/auth/register', userData);
     return response.data;
   },
 
-  // Login user
   login: async (credentials) => {
     const response = await api.post('/auth/login', credentials);
     if (response.data.token) {
@@ -120,13 +119,11 @@ export const authService = {
     return response.data;
   },
 
-  // Logout user
   logout: () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
   },
 
-  // Get current user
   getCurrentUser: () => {
     const user = localStorage.getItem('user');
     return user ? JSON.parse(user) : null;
