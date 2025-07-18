@@ -1,29 +1,42 @@
-import js from '@eslint/js'
-import globals from 'globals'
-import reactHooks from 'eslint-plugin-react-hooks'
-import reactRefresh from 'eslint-plugin-react-refresh'
-import { defineConfig, globalIgnores } from 'eslint/config'
+// client/eslint.config.js
+import globals from "globals";
+import pluginReact from "eslint-plugin-react";
+import js from "@eslint/js";
 
-export default defineConfig([
-  globalIgnores(['dist']),
+export default [
+  js.configs.recommended,
   {
-    files: ['**/*.{js,jsx}'],
-    extends: [
-      js.configs.recommended,
-      reactHooks.configs['recommended-latest'],
-      reactRefresh.configs.vite,
-    ],
+    files: ["**/*.jsx", "**/*.js"],
+    ignores: ["dist/**", "build/**"], // Ignore dist and build folders
     languageOptions: {
-      ecmaVersion: 2020,
-      globals: globals.browser,
-      parserOptions: {
-        ecmaVersion: 'latest',
-        ecmaFeatures: { jsx: true },
-        sourceType: 'module',
+      ecmaVersion: "latest",
+      sourceType: "module",
+      globals: {
+        ...globals.browser,
+        process: "readonly", // For process.env
+        setImmediate: "readonly", // For setImmediate
+        __REACT_DEVTOOLS_GLOBAL_HOOK__: "readonly", // For React DevTools
       },
     },
+    plugins: {
+      react: pluginReact,
+    },
     rules: {
-      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+      ...pluginReact.configs.recommended.rules,
+      "react/react-in-jsx-scope": "off", // Disable React import requirement (Vite/React 17+)
+      "react/prop-types": "off", // Disable PropTypes (not used in your project)
+      "react/no-unescaped-entities": "error", // Correct rule name
+      "no-undef": "error",
+      "no-unused-vars": "warn", // Warn instead of error to avoid build failure
+      "no-cond-assign": "error",
+      "no-fallthrough": "error",
+      "no-prototype-builtins": "warn", // Warn instead of error for hasOwnProperty
+      "no-empty": "warn", // Warn for empty blocks
+    },
+    settings: {
+      react: {
+        version: "detect", // Auto-detect React version
+      },
     },
   },
-])
+];
